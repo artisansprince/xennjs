@@ -71,6 +71,7 @@ touch .env
 ```
 
 Jalankan command ini di terminal, dan semua folder beserta file-nya akan langsung dibuat dalam sekali running.
+
 ---
 
 ## **Penjelasan File dan Kode Lengkap**
