@@ -45,6 +45,32 @@ project-name/
 └── README.md
 ```
 
+
+Ini command untuk membuat struktur folder diatas yang sudah digabungkan dengan `&&`, sehingga bisa dijalankan sekali untuk membuat semua folder dan file yang dibutuhkan.
+
+```bash
+mkdir -p src/app/controllers && \
+mkdir -p src/app/middlewares && \
+mkdir -p src/app/models && \
+mkdir -p src/app/services && \
+mkdir -p src/app/migrations && \
+mkdir -p src/config && \
+mkdir -p src/routes && \
+touch src/app/controllers/UserController.ts && \
+touch src/app/middlewares/authMiddleware.ts && \
+touch src/app/models/User.ts && \
+touch src/app/services/UserService.ts && \
+touch src/app/migrations/2024-create-users-table.ts && \
+touch src/config/database.ts && \
+touch src/routes/api.ts && \
+touch src/app.ts && \
+touch src/server.ts && \
+touch package.json && \
+touch tsconfig.json && \
+touch .env
+```
+
+Jalankan command ini di terminal, dan semua folder beserta file-nya akan langsung dibuat dalam sekali running.
 ---
 
 ## **Penjelasan File dan Kode Lengkap**
