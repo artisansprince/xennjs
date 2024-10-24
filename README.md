@@ -1,6 +1,6 @@
 # XennJS - Express.js Minimalist Design Pattern
 
-XennJS adalah design pattern minimalis untuk pengembangan backend menggunakan **Express.js** dan **JavaScript/TypeScript**. XennJS dirancang untuk memudahkan pengembangan **RESTful API** menggunakan arsitektur **MVC** (Model-View-Controller), yang membuat aplikasi menjadi modular, scalable, dan mudah di-maintain. Pada versi ini, XennJS menggunakan **Sequelize** sebagai ORM untuk mengelola interaksi database, menggantikan query manual.
+XennJS adalah design pattern minimalis untuk pengembangan backend menggunakan **Express.js** dan **JavaScript/TypeScript**. XennJS dirancang untuk memudahkan pengembangan **RESTful API** menggunakan arsitektur **MVC** (Model-View-Controller), yang membuat aplikasi menjadi modular, scalable, dan mudah di-maintain. Pada versi ini, XennJS menggunakan **Sequelize** sebagai ORM untuk mengelola interaksi database.
 
 ## Fitur Utama:
 - **MVC Architecture**: Memisahkan logika bisnis, data, dan API handling agar lebih mudah dikelola dan di-maintain.
@@ -476,7 +476,7 @@ PORT=3000
 
 ---
 
-Dengan struktur dan penjelasan di atas, XennJS kini mendukung **CRUD** pada **user** menggunakan **Sequelize ORM**. Setiap komponen memiliki tanggung jawab yang jelas, memudahkan pengembangan aplikasi scalable.
+Dengan struktur dan penjelasan di atas, yang merupakan contoh XennJS **CRUD** pada **user** menggunakan **Sequelize ORM**. Setiap komponen memiliki tanggung jawab yang jelas, memudahkan pengembangan aplikasi scalable.
 
 ---
 
