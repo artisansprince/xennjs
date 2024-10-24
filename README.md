@@ -1,22 +1,17 @@
 # XennJS - Express.js Minimalist Design Pattern
 
-XennJS adalah design pattern minimalis untuk pengembangan backend menggunakan **Express.js** dan **JavaScript/TypeScript**, yang dirancang khusus untuk memudahkan pembuatan **RESTful API** dengan arsitektur berbasis **MVC** (Model-View-Controller). Fokus utama XennJS adalah menyederhanakan pengembangan dengan struktur yang bersih, modular, dan scalable, sehingga cocok digunakan baik untuk proyek kecil maupun besar.
+XennJS adalah design pattern minimalis untuk pengembangan backend menggunakan **Express.js** dan **JavaScript/TypeScript**. XennJS dirancang untuk memudahkan pengembangan **RESTful API** menggunakan arsitektur **MVC** (Model-View-Controller), yang membuat aplikasi menjadi modular, scalable, dan mudah di-maintain. Pada versi ini, XennJS menggunakan **Sequelize** sebagai ORM untuk mengelola interaksi database, menggantikan query manual.
 
 ## Fitur Utama:
 - **MVC Architecture**: Memisahkan logika bisnis, data, dan API handling agar lebih mudah dikelola dan di-maintain.
 - **TypeScript Support**: Memberikan keamanan tipe dan meningkatkan produktivitas pengembangan dengan fitur TypeScript.
+- **Sequelize ORM**: Abstraksi database yang lebih mudah dikelola dan mendukung berbagai database relasional (MySQL, PostgreSQL, SQLite, dll.).
 - **Highly Modular**: Setiap komponen seperti model, controller, dan service ditata rapi untuk mendukung pengembangan yang efisien dan scalable.
-- **Minimal Setup**: Dibuat dengan filosofi minimalis, tidak membebani dengan konfigurasi berlebihan namun tetap fleksibel.
-
-Cocok untuk kamu yang menginginkan **Express.js** sederhana namun tetap powerful, dengan pola coding yang konsisten dan terstruktur, dan itu didapatkan dalam versi yang ringan dan cepat.
+- **Minimal Setup**: Konfigurasi minimalis dengan filosofi sederhana namun tetap fleksibel.
 
 ---
 
-
-# Xennjs Quick Breakdown
-Pembahasan sekilas mengenai Xennjs saat mengembangkan **RESTful API** dengan **TypeScript, MariaDb, dan TypeORM**
-
-## **Struktur Folder Lengkap Xennjs**
+## Struktur Folder Lengkap XennJS
 
 ```plaintext
 project-name/
@@ -32,7 +27,7 @@ project-name/
 │   │   ├── services/
 │   │   │   └── UserService.ts
 │   │   └── migrations/
-│   │       └── 2024-create-users-table.ts
+│   │       └── 240101-create-users-table.ts
 │   ├── config/
 │   │   └── database.ts
 │   ├── routes/
@@ -45,32 +40,134 @@ project-name/
 └── README.md
 ```
 
+---
 
-Ini command untuk membuat struktur folder diatas yang sudah digabungkan dengan `&&`, sehingga bisa dijalankan sekali untuk membuat semua folder dan file yang dibutuhkan.
+## Setup XennJS
 
-```bash
-mkdir -p src/app/controllers && \
-mkdir -p src/app/middlewares && \
-mkdir -p src/app/models && \
-mkdir -p src/app/services && \
-mkdir -p src/app/migrations && \
-mkdir -p src/config && \
-mkdir -p src/routes && \
-touch src/app/controllers/UserController.ts && \
-touch src/app/middlewares/authMiddleware.ts && \
-touch src/app/models/User.ts && \
-touch src/app/services/UserService.ts && \
-touch src/app/migrations/2024-create-users-table.ts && \
-touch src/config/database.ts && \
-touch src/routes/api.ts && \
-touch src/app.ts && \
-touch src/server.ts && \
-touch package.json && \
-touch tsconfig.json && \
-touch .env
+### 1. **Instalasi Dependency**
+
+Pertama, kamu perlu menginisialisasi proyek Node.js dan menginstall beberapa dependencies dasar. Berikut cara melakukannya:
+
+1. **Inisialisasi Proyek**:
+
+   Buka terminal dan jalankan perintah berikut untuk menginisialisasi proyek:
+
+   ```bash
+   npm init -y
+   ```
+
+2. **Instalasi Dependency**:
+
+   Install dependency yang dibutuhkan seperti **Express.js**, **Sequelize**, dan **TypeScript**:
+
+   ```bash
+   npm install express sequelize mysql2 dotenv
+   ```
+
+3. **Instalasi Dependency untuk Development** (TypeScript, nodemon, dll):
+
+   Untuk memastikan proyek kamu bisa menggunakan TypeScript dan dijalankan otomatis saat development, install juga **TypeScript** dan beberapa tool seperti **nodemon** untuk auto-restart server saat file diubah:
+
+   ```bash
+   npm install --save-dev typescript @types/node @types/express nodemon ts-node
+   ```
+
+---
+
+### 2. **Membuat File `package.json`**
+
+File ini akan berisi script yang bisa kamu gunakan untuk menjalankan aplikasi di mode **development** dan **production**. Jika belum terbuat, tambahkan di dalam file `package.json` seperti ini:
+
+```json
+{
+  "name": "xennjs",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sequelize": "^6.25.3",
+    "mysql2": "^3.2.0",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "@types/express": "^4.17.0",
+    "nodemon": "^3.0.0",
+    "ts-node": "^10.0.0"
+  }
+}
 ```
 
-Jalankan command ini di terminal, dan semua folder beserta file-nya akan langsung dibuat dalam sekali running.
+- **Script penting**:
+  - `start`: untuk menjalankan server di mode **production** (setelah build).
+  - `dev`: untuk menjalankan server di mode **development** dengan **nodemon** (auto-restart saat file berubah).
+  - `build`: untuk compile TypeScript menjadi JavaScript.
+
+---
+
+### 3. **Membuat File `tsconfig.json`**
+
+File ini digunakan untuk mengatur konfigurasi TypeScript, seperti lokasi input-output file dan rule untuk kompilasi.
+
+Buat file `tsconfig.json` di root proyek:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
+```
+
+- `rootDir`: Direktori sumber kode TypeScript (`src`).
+- `outDir`: Direktori hasil build dalam JavaScript (`dist`).
+
+---
+
+### 4. **Setup Folder dan File**
+
+Buat struktur folder seperti berikut:
+
+```
+/xennjs
+│
+├── /src
+│   └── ... # isi folder src seperti struktur folder diatas
+|
+├── tsconfig.json
+├── package.json
+├── .env
+└── node_modules
+```
+
+Isi masing-masing file seperti yang sudah dijelaskan sebelumnya.
+
+---
+
+### 5. **File .env**
+
+Tambahkan file `.env` di root untuk menyimpan variabel environment seperti konfigurasi database:
+
+```env
+DATABASE_NAME=your_database_name
+DATABASE_USERNAME=root
+DATABASE_PASSWORD=
+PORT=3000
+```
 
 ---
 
@@ -78,167 +175,146 @@ Jalankan command ini di terminal, dan semua folder beserta file-nya akan langsun
 
 ### 1. **Model (app/models/User.ts)**
 
-Model ini mendefinisikan struktur data **User** yang mewakili tabel di database.
+Model ini mendefinisikan struktur data **User** yang mewakili tabel di database. Menggunakan **Sequelize** untuk mendefinisikan model User yang di-mapping ke tabel **users**.
 
 ```typescript
-import { RowDataPacket } from 'mysql2';
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../config/database';
 
-export interface User extends RowDataPacket {
-  id: number;
-  name: string;
-  email: string;
-  created_at: Date;
-  updated_at: Date;
+class User extends Model {
+  public id!: number;
+  public name!: string;
+  public email!: string;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
-```
 
-Dalam hal ini, kita menggunakan `RowDataPacket` dari `mysql2` untuk mengimpor tipe data agar cocok dengan hasil query dari database.
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      unique: true,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+  },
+  {
+    sequelize,
+    tableName: 'users',
+    timestamps: true, // Untuk createdAt dan updatedAt
+  }
+);
+
+export default User;
+```
 
 ---
 
 ### 2. **Service (app/services/UserService.ts)**
 
-Service ini mengelola logika bisnis untuk interaksi dengan database.
+Service ini bertugas untuk mengelola logika bisnis terkait operasi CRUD pada tabel **users** menggunakan Sequelize.
 
 ```typescript
-import { User } from '../models/User';
-import { db } from '../config/database';
+import User from '../models/User';
 
 // Mendapatkan semua pengguna dari database
 export const findAllUsers = async (): Promise<User[]> => {
-  const [rows] = await db.query<User[]>('SELECT * FROM users');
-  return rows;
+  return await User.findAll();
+};
+
+// Menemukan pengguna berdasarkan ID
+export const findUserById = async (id: number): Promise<User | null> => {
+  return await User.findByPk(id);
 };
 
 // Menambahkan pengguna baru ke database
-export const createUser = async (data: Omit<User, 'id' | 'created_at' | 'updated_at'>): Promise<User> => {
-  const [result] = await db.query('INSERT INTO users (name, email) VALUES (?, ?)', [data.name, data.email]);
-  const newUser: User = { id: result.insertId, ...data, created_at: new Date(), updated_at: new Date() };
-  return newUser;
+export const createUser = async (data: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> => {
+  return await User.create(data);
+};
+
+// Memperbarui pengguna berdasarkan ID
+export const updateUser = async (id: number, data: Partial<User>): Promise<[number, User[]]> => {
+  return await User.update(data, { where: { id } });
+};
+
+// Menghapus pengguna berdasarkan ID
+export const deleteUser = async (id: number): Promise<number> => {
+  return await User.destroy({ where: { id } });
 };
 ```
 
-Ini mengimpor `db` dari file konfigurasi database dan menggunakan query SQL untuk mengelola data.
+Pada service ini, kita menggunakan fungsi-fungsi dari Sequelize untuk mempermudah interaksi dengan database, seperti `findAll()`, `findByPk()`, `create()`, `update()`, dan `destroy()`.
 
 ---
 
-### 3. **Migrasi (app/migrations/2024-create-users-table.ts)**
+### 3. **Migrasi (app/migrations/240101-create-users-table.ts)**
 
-File migrasi ini digunakan untuk membuat tabel **users** di database.
+File migrasi digunakan untuk membuat tabel **users** di database.
 
 ```typescript
-import { db } from '../config/database';
+import { QueryInterface, DataTypes } from 'sequelize';
 
-export const createUsersTable = async () => {
-  const query = `
-    CREATE TABLE IF NOT EXISTS users (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      email VARCHAR(100) NOT NULL UNIQUE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    )
-  `;
-  await db.query(query);
+export const up = async (queryInterface: QueryInterface): Promise<void> => {
+  await queryInterface.createTable('users', {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      unique: true,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
+  });
+};
+
+export const down = async (queryInterface: QueryInterface): Promise<void> => {
+  await queryInterface.dropTable('users');
 };
 ```
 
-Fungsi ini digunakan untuk membuat tabel **users** dengan kolom **id**, **name**, **email**, **created_at**, dan **updated_at**.
+Migrasi ini akan membuat tabel **users** dengan kolom **id**, **name**, **email**, **createdAt**, dan **updatedAt**.
 
 ---
 
-### 4. **Konfigurasi Database (config/database.ts)**
+### 4. **Controller (app/controllers/UserController.ts)**
 
-File ini berisi koneksi ke database MariaDB menggunakan `mysql2`.
-
-```typescript
-import dotenv from 'dotenv';
-import mysql from 'mysql2/promise';
-
-dotenv.config();
-
-export const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
-```
-
-Di sini, kita menggunakan **mysql2/promise** untuk mengelola koneksi database MariaDB dengan pool connection. Jangan lupa tambahkan variabel environment ke dalam file `.env`.
-
----
-
-### 5. **Environment Variables (.env)**
-
-Pastikan kamu menyimpan detail koneksi database di file `.env`.
-
-```plaintext
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=rootpassword
-DB_NAME=mydatabase
-PORT=3000
-```
-
----
-
-### 6. **App Setup (app.ts)**
-
-File ini menghubungkan semua bagian aplikasi seperti middleware, route, dan koneksi database.
-
-```typescript
-import express, { Application } from 'express';
-import apiRoutes from './routes/api';
-import { createUsersTable } from './app/migrations/2024-create-users-table';
-
-const app: Application = express();
-
-// Middleware
-app.use(express.json());
-
-// Migrasi database
-createUsersTable().then(() => console.log('Users table created'));
-
-// API Routes
-app.use('/api', apiRoutes);
-
-export default app;
-```
-
-Selain menyiapkan routing API, di sini kita juga menjalankan migrasi untuk membuat tabel **users** jika belum ada.
-
----
-
-### 7. **Routing (routes/api.ts)**
-
-Di sini semua rute API diatur. Misalnya, kita punya rute untuk mendapatkan daftar pengguna dan menambahkan pengguna baru.
-
-```typescript
-import { Router } from 'express';
-import { getUsers, addUser } from '../app/controllers/UserController';
-
-const router: Router = Router();
-
-router.get('/users', getUsers);
-router.post('/users', addUser);
-
-export default router;
-```
-
----
-
-### 8. **Controller (app/controllers/UserController.ts)**
-
-Controller ini bertugas menangani request dan response. Ini menghubungkan request dari user ke service yang berisi logika bisnis.
+Controller ini bertanggung jawab untuk menangani request dan response, serta menghubungkan request dari user ke service yang berisi logika bisnis.
 
 ```typescript
 import { Request, Response } from 'express';
-import { findAllUsers, createUser } from '../services/UserService';
+import { findAllUsers, findUserById, createUser, updateUser, deleteUser } from '../services/UserService';
 
+// Mendapatkan semua pengguna
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const users = await findAllUsers();
@@ -248,6 +324,21 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// Mendapatkan pengguna berdasarkan ID
+export const getUserById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = await findUserById(+req.params.id);
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving user' });
+  }
+};
+
+// Membuat pengguna baru
 export const addUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const newUser = await createUser(req.body);
@@ -256,74 +347,166 @@ export const addUser = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: 'Error creating user' });
   }
 };
-```
 
----
+// Memperbarui pengguna berdasarkan ID
+export const updateUserById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const [updated] = await updateUser(+req.params.id, req.body);
+    if (updated) {
+      const updatedUser = await findUserById(+req.params.id);
+      res.status(200).json(updatedUser);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating user' });
+  }
+};
 
-### 9. **Middleware (app/middlewares/authMiddleware.ts)**
-
-Ini middleware untuk validasi autentikasi. Bisa ditambahkan di rute yang perlu validasi token.
-
-```typescript
-import { Request, Response, NextFunction } from 'express';
-
-export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-  const token = req.headers['authorization'];
-  if (token === 'Bearer valid-token') {
-    next(); // Token valid, lanjutkan ke request berikutnya
-  } else {
-    res.status(401).json({ message: 'Unauthorized' });
+// Menghapus pengguna berdasarkan ID
+export const deleteUserById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const deleted = await deleteUser(+req.params.id);
+    if (deleted) {
+      res.status(200).json({ message: 'User deleted' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting user' });
   }
 };
 ```
 
+Controller ini menghubungkan request HTTP seperti **GET**, **POST**, **PUT**, dan **DELETE** dengan fungsi CRUD yang ada di service.
+
 ---
 
-### 10. **Memulai Server (server.ts)**
+### 5. **Konfigurasi Database (config/database.ts)**
 
-File ini untuk memulai server.
+File konfigurasi ini digunakan untuk mengatur koneksi ke database menggunakan Sequelize.
 
 ```typescript
-import app from './app';
-const PORT = process.env.PORT || 9999;
+import { Sequelize } from
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+ 'sequelize';
+
+export const sequelize = new Sequelize('database_name', 'username', 'password', {
+  host: 'localhost',
+  dialect: 'mysql', // Ubah sesuai database yang digunakan
+  logging: false,
 });
 ```
 
 ---
 
-### 11. **Install Dependencies**
+### 6. **Routing (routes/api.ts)**
 
-Install semua dependensi yang diperlukan:
+Routing untuk menghubungkan endpoint HTTP ke controller.
 
-```bash
-npm install express dotenv mysql2
-npm install -D typescript ts-node-dev @types/node @types/express @types/mysql2
+```typescript
+import { Router } from 'express';
+import { getUsers, getUserById, addUser, updateUserById, deleteUserById } from '../app/controllers/UserController';
+
+const router = Router();
+
+router.get('/users', getUsers);
+router.get('/users/:id', getUserById);
+router.post('/users', addUser);
+router.put('/users/:id', updateUserById);
+router.delete('/users/:id', deleteUserById);
+
+export default router;
 ```
 
 ---
 
-### 12. **Menjalankan Migrasi dan Server**
+### 7. **Entry Point (app.ts)**
 
-1. Jalankan server dalam mode development menggunakan `ts-node-dev`:
+File ini menginisialisasi aplikasi Express.js dan menghubungkan ke routing.
 
-```bash
-npx ts-node-dev src/server.ts
+```typescript
+import express from 'express';
+import apiRoutes from './routes/api';
+import { sequelize } from './config/database';
+
+const app = express();
+
+app.use(express.json()); // Untuk membaca body JSON
+app.use('/api', apiRoutes);
+
+// Sinkronisasi model ke database
+sequelize.sync().then(() => {
+  console.log('Database connected and models synced.');
+});
+
+export default app;
+
 ```
 
-2. Untuk compile TypeScript ke JavaScript:
 
-```bash
-npx tsc
-```
+---
 
-3. Jalankan hasil compile:
+### 8. **Server (server.ts)**
 
-```bash
-node dist/server.js
+File ini menginisialisasi aplikasi Express.js dan menghubungkan ke routing.
+
+```typescript
+import app from './app';
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 ```
 
 ---
+
+### 9. **.env File**
+
+File **.env** untuk menyimpan konfigurasi environment, seperti port dan database credentials.
+
+```plaintext
+DATABASE_NAME=your_database
+DATABASE_USERNAME=root
+DATABASE_PASSWORD=
+PORT=3000
+```
+
+---
+
+Dengan struktur dan penjelasan di atas, XennJS kini mendukung **CRUD** pada **user** menggunakan **Sequelize ORM**. Setiap komponen memiliki tanggung jawab yang jelas, memudahkan pengembangan aplikasi scalable.
+
+---
+
+## Menjalankan XennJS
+
+
+### **Mode Development**:
+
+Untuk mode development, cukup jalankan perintah ini. Ini akan menggunakan **nodemon** dan otomatis merestart server jika ada perubahan pada file.
+
+```bash
+npm run dev
+```
+
+### **Build untuk Production**:
+
+Kompilasi TypeScript ke JavaScript dengan menjalankan:
+
+```bash
+npm run build
+```
+
+Hasil build akan ada di folder `dist/`. Setelah build selesai, jalankan server di mode **production**:
+
+```bash
+npm start
+```
+
+---
+
+Sekarang XennJS sudah berjalan baik di mode **development** maupun **production**.
+
 
