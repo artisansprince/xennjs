@@ -163,10 +163,15 @@ Isi masing-masing file seperti yang sudah dijelaskan sebelumnya.
 Tambahkan file `.env` di root untuk menyimpan variabel environment seperti konfigurasi database:
 
 ```env
-DATABASE_NAME=your_database_name
+# App port
+PORT=3000
+
+# Database
+DB_DIALECT=mysql
+DB_HOST=localhost
+DATABASE_NAME=your_database
 DATABASE_USERNAME=root
 DATABASE_PASSWORD=
-PORT=3000
 ```
 
 ---
@@ -387,15 +392,23 @@ Controller ini menghubungkan request HTTP seperti **GET**, **POST**, **PUT**, da
 File konfigurasi ini digunakan untuk mengatur koneksi ke database menggunakan Sequelize.
 
 ```typescript
-import { Sequelize } from
+import { Sequelize } from 'sequelize';
+require('dotenv').config(); // Memuat variabel dari .env
 
- 'sequelize';
+// Masukkan variabel env ke dalam variabel JavaScript
+const dbName = process.env.DATABASE_NAME;
+const dbUser = process.env.DATABASE_USERNAME;
+const dbPassword = process.env.DATABASE_PASSWORD || ''; // Jika password kosong di .env, tetap gunakan string kosong
+const dbHost = process.env.DB_HOST || 'localhost'; // Default ke 'localhost' jika DB_HOST tidak ada di .env
+const dbDialect = process.env.DB_DIALECT || 'mysql'; // Default ke 'mysql' jika DB_DIALECT tidak ada di .env
 
-export const sequelize = new Sequelize('database_name', 'username', 'password', {
-  host: 'localhost',
-  dialect: 'mysql', // Ubah sesuai database yang digunakan
+// Inisialisasi Sequelize dengan variabel
+export const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
+  host: dbHost,
+  dialect: dbDialect,
   logging: false,
 });
+
 ```
 
 ---
@@ -468,10 +481,15 @@ app.listen(PORT, () => {
 File **.env** untuk menyimpan konfigurasi environment, seperti port dan database credentials.
 
 ```plaintext
+# App port
+PORT=3000
+
+# Database
+DB_DIALECT=mysql
+DB_HOST=localhost
 DATABASE_NAME=your_database
 DATABASE_USERNAME=root
 DATABASE_PASSWORD=
-PORT=3000
 ```
 
 ---
