@@ -25,11 +25,11 @@ xennjs/
 │   │   ├── adminController.js
 │   │   ├── categoryController.js
 │   │   └── productController.js
-│   ├── routes/
-│   │   ├── adminRoutes.js
-│   │   ├── categoryRoutes.js
-│   │   ├── productRoutes.js
-│   │   └── main.js
+│   └── routes/
+│       ├── adminRoutes.js
+│       ├── categoryRoutes.js
+│       ├── productRoutes.js
+│       └── main.js
 │
 ├── config/
 │   └── dbconnect.js
